@@ -1,0 +1,141 @@
+CREATE table Employees (
+	emp_no DEC(6),
+	emp_title VARCHAR(30),
+	birth_date DATE,
+	first_name VARCHAR(15),
+	last_name VARCHAR (30),
+	sex VARCHAR(1),
+	hire_date DATE
+	);
+	
+CREATE table dept_manager (
+	dep_no VARCHAR(6),
+	emp_no DEC(7)
+	);
+	
+CREATE table dept_emp (
+	emp_no DEC(7),
+	dep_no VARCHAR(6)
+	);	
+	
+CREATE table departments (
+	dep_no VARCHAR(6),
+	dept_name VARCHAR(30)
+	);	
+	
+CREATE table salaries (
+	emp_no DEC(7),
+	salary DEC
+	);
+	
+CREATE table titles (
+	title_id VARCHAR(6),
+	title VARCHAR
+	);
+	
+-- 1. List emp number, last and first name, sex and salary
+
+Create View details AS
+
+SELECT first_name, last_name, sex, employees.emp_no, salaries.salary
+from employees
+join salaries
+on employees.emp_no = salaries.emp_no;
+
+-- 2. list fname, lname, hire date for people hired in 1986
+
+Create view "Hire Date" as
+
+SELECT first_name, last_name, hire_date
+from employees
+where hire_date < ('1987/01/01') and hire_date > ('1985/12/31');
+
+-- 3. Manager data = manager of each dept, dept #, dept name, managers employee number, last name, first name.
+
+Create View  Managers AS
+
+SELECT first_name, last_name, employees.emp_no, dept_manager.dep_no, departments.dept_name
+from employees
+	join salaries
+	on employees.emp_no = salaries.emp_no
+		join dept_manager
+		on employees.emp_no = dept_manager.emp_no
+			join departments
+			on dept_manager.dep_no = departments.dep_no;
+	
+
+
+-- 4.  List the department of each employee with THE following info: emp number, last name, first name and department name
+
+Create View Department_View  AS
+
+SELECT first_name, last_name, employees.emp_no, departments.dept_name
+from employees
+	join dept_emp
+	on employees.emp_no = dept_emp.emp_no
+		join departments
+		on dept_emp.dep_no = departments.dep_no;
+
+		
+
+-- 5. List the first name, last name, sex, for employees whose firsat name is "Hercules" and last name begins with "B".
+
+CREATE VIEW Hercules AS 
+
+SELECT first_name, last_name, sex
+from employees
+	WHERE first_name = 'Hercules' 
+	and last_name LIKE 'B%';
+
+
+-- 6.  List all employees in the sales department including thier emp number, last name, first name, and department name
+
+Create View Sales_Department AS
+
+Select first_name, last_name, employees.emp_no, Departments.dept_name
+from employees
+	join dept_emp
+	on employees.emp_no = dept_emp.emp_no
+		join departments
+		on dept_emp.dep_no = departments.dep_no
+		where departments.dept_name = 'Sales';
+
+
+-- 7. list all employees in the sales and development departments including their emp number, last name, first name, and department name.
+
+Create View Development_or_Sales_Departments AS
+
+Select first_name, last_name, employees.emp_no, Departments.dept_name
+from employees
+	join dept_emp
+	on employees.emp_no = dept_emp.emp_no
+		join departments
+		on dept_emp.dep_no = departments.dep_no
+		where exists(select departments.dept_name where dept_name = 'Sales' or dept_name = 'Development');
+					 
+					 
+					 
+							 
+-- 8. in descending order, list teh frequency count of employees last name, i.e. how many times employees share each last name.
+
+Select last_name, count(last_name) as "Last_Name_Count"
+from employees
+	group by employees.last_name
+	order by "Last_Name_Count" DESC;
+	
+	
+	
+-- BONUS BONUS BONUS
+
+-- 1.  Import SQL database into Pandas
+
+-- 2.  CreaTE A HISTOGRAM TO VBISUALIZE THE MOST COMMON SALARY RANGES FROR EMPLOYEES
+
+-- 3. CREATE A BAR CHART OF AVERAGE SALARY BY TITLE.
+
+
+
+
+
+
+
